@@ -32,7 +32,7 @@ public class TokenBucket {
                     currentNumberOfTokens++;
                 }
                 condition.signal();
-                lock.lock();
+                lock.unlock();
                 Thread.sleep(1000);
             } catch (Exception e) {
                 throw new RuntimeException(e);
@@ -41,12 +41,13 @@ public class TokenBucket {
 
     }
 
-    public  void getToken() {
+    public void getToken() {
         lock.lock();
         try {
            while (currentNumberOfTokens  == 0) {
                condition.await();
            }
+            currentNumberOfTokens--;
             System.out.println(
                     "Granting " + Thread.currentThread().getName() + " token at " + System.currentTimeMillis() / 1000);
         } catch (Exception e) {
